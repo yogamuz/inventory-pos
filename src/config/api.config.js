@@ -13,10 +13,37 @@ const apiClient = axios.create({
   },
   withCredentials: true, // PENTING: Agar cookie dikirim otomatis
 });
-
-apiClient.interceptors.response.use(
-  (response) => response.data,
+// Request interceptor untuk logging
+apiClient.interceptors.request.use(
+  (config) => {
+    console.log('🚀 API Request:', {
+      method: config.method?.toUpperCase(),
+      url: config.url,
+      withCredentials: config.withCredentials,
+    });
+    return config;
+  },
   (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor (yang sudah ada, tapi tambahkan logging)
+apiClient.interceptors.response.use(
+  (response) => {
+    console.log('✅ API Response:', {
+      url: response.config.url,
+      status: response.status,
+    });
+    return response.data;
+  },
+  (error) => {
+    console.log('❌ API Error:', {
+      url: error.config?.url,
+      status: error.response?.status,
+      message: error.response?.data?.message,
+    });
+
     const errorMessage =
       error.response?.data?.message || error.message || "Terjadi kesalahan";
 
@@ -32,7 +59,8 @@ apiClient.interceptors.response.use(
 
       // Hanya redirect jika bukan dari auth endpoint dan bukan di halaman login
       if (!isAuthEndpoint && !isLoginPage) {
-        localStorage.clear(); // Clear any stored data
+        console.log('🔐 Unauthorized, redirecting to login...');
+        localStorage.clear();
         window.location.href = "/login";
       }
     }

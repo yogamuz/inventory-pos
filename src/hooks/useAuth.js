@@ -40,7 +40,15 @@ const useAuth = create(
       },
 
       checkAuth: async () => {
-        // ✅ HAPUS: set({ isInitializing: true }); ← INI PENYEBAB LOOP!
+        // ✅ TAMBAH: Jangan check jika sedang loading
+        const currentState = get();
+        if (currentState.isInitializing) {
+          console.log("⚠️ CheckAuth already in progress, skipping...");
+          return false;
+        }
+
+        set({ isInitializing: true });
+
         try {
           const response = await authApi.getMe();
           set({
@@ -51,8 +59,8 @@ const useAuth = create(
           });
           return true;
         } catch (error) {
-          set({ 
-            user: null, 
+          set({
+            user: null,
             isAuthenticated: false,
             isInitializing: false,
           });

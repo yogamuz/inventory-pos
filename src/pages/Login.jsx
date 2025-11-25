@@ -46,33 +46,42 @@ const Login = () => {
     if (error) setError("");
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (isLoading) return;
+  if (isLoading) return;
 
-    if (!formData.username.trim() || !formData.password.trim()) {
-      toast.error("Username dan password harus diisi!");
-      return;
-    }
+  if (!formData.username.trim() || !formData.password.trim()) {
+    toast.error("Username dan password harus diisi!");
+    return;
+  }
 
-    setIsLoading(true);
-    setError("");
+  setIsLoading(true);
+  setError("");
 
-    try {
-      await login(formData);
+  try {
+    await login(formData);
 
+    // ✅ TAMBAH: Tunggu sebentar untuk memastikan cookie ter-set
+    await new Promise(resolve => setTimeout(resolve, 500));
 
-      const from = location.state?.from?.pathname || "/";
-
+    const from = location.state?.from?.pathname || "/";
+    
+    // ✅ PERBAIKI: Jangan langsung navigate, beri waktu untuk cookie
+    toast.success("Login berhasil!");
+    
+    // Navigate setelah toast muncul
+    setTimeout(() => {
       navigate(from, { replace: true, state: { loginSuccess: true } });
-    } catch (err) {
-      setError("Username atau password salah");
-      toast.error("Login gagal");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    }, 100);
+
+  } catch (err) {
+    setError("Username atau password salah");
+    toast.error("Login gagal");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleForgotPassword = async () => {
     if (isForgotPasswordLoading) return;
