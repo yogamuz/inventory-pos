@@ -6,7 +6,6 @@ export default function ProtectedRoute({ children }) {
   const { isAuthenticated, _hasHydrated, isInitializing, checkAuth } = useAuth();
   const location = useLocation();
 
-  // ✅ TAMBAH: Validasi token saat mount
   useEffect(() => {
     if (_hasHydrated && isAuthenticated) {
       checkAuth();

@@ -9,7 +9,7 @@ const useAuth = create(
       user: null,
       isAuthenticated: false,
       _hasHydrated: false,
-      isInitializing: true, //  INI
+      isInitializing: true, // ✅ TAMBAH INI
 
       setHasHydrated: (state) => {
         set({ _hasHydrated: state });
@@ -26,7 +26,7 @@ const useAuth = create(
             user: response.data.user,
             isAuthenticated: true,
             _hasHydrated: true,
-            isInitializing: false, // 
+            isInitializing: false, // ✅ TAMBAH
           });
           return response;
         } catch (error) {
@@ -40,21 +40,21 @@ const useAuth = create(
       },
 
       checkAuth: async () => {
-        set({ isInitializing: true }); // 
+        set({ isInitializing: true }); // ✅ TAMBAH
         try {
           const response = await authApi.getMe();
           set({
             user: response.data,
             isAuthenticated: true,
             _hasHydrated: true,
-            isInitializing: false, // 
+            isInitializing: false, // ✅ TAMBAH
           });
           return true;
         } catch (error) {
           set({ 
             user: null, 
             isAuthenticated: false,
-            isInitializing: false, // 
+            isInitializing: false, // ✅ TAMBAH
           });
           return false;
         }
@@ -75,4 +75,4 @@ const useAuth = create(
   )
 );
 
-export default useAuth;Y
+export default useAuth;
