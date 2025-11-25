@@ -22,11 +22,17 @@ apiClient.interceptors.response.use(
 
     // Handle specific error codes
     if (error.response?.status === 401) {
-      // ✅ PERBAIKAN: Hanya redirect jika BUKAN dari endpoint login
-      const isLoginEndpoint = error.config?.url?.includes("/auth/login");
+      // Cek apakah sedang di halaman login atau endpoint auth
+      const isAuthEndpoint = 
+        error.config?.url?.includes("/auth/login") ||
+        error.config?.url?.includes("/auth/forgot-password") ||
+        error.config?.url?.includes("/auth/reset-password");
+      
+      const isLoginPage = window.location.pathname === "/login";
 
-      if (!isLoginEndpoint) {
-        // Redirect ke login jika unauthorized (kecuali dari login page)
+      // Hanya redirect jika bukan dari auth endpoint dan bukan di halaman login
+      if (!isAuthEndpoint && !isLoginPage) {
+        localStorage.clear(); // Clear any stored data
         window.location.href = "/login";
       }
     }
@@ -34,7 +40,6 @@ apiClient.interceptors.response.use(
     return Promise.reject(new Error(errorMessage));
   }
 );
-
 
 
 export default apiClient;
