@@ -7,10 +7,11 @@ export default function ProtectedRoute({ children }) {
   const location = useLocation();
 
   useEffect(() => {
-    if (_hasHydrated && isAuthenticated) {
+    // ✅ FIX: Hanya panggil checkAuth saat hydration selesai, TANPA cek isAuthenticated
+    if (_hasHydrated && !isInitializing) {
       checkAuth();
     }
-  }, [_hasHydrated, isAuthenticated, checkAuth]);
+  }, [_hasHydrated]); // ✅ FIX: Hapus isAuthenticated & checkAuth dari dependency
 
   // Loading saat hydration atau validating token
   if (!_hasHydrated || isInitializing) {
