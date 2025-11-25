@@ -1,4 +1,3 @@
-
 // src/pages/Login.jsx
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -19,7 +18,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isForgotPasswordLoading, setIsForgotPasswordLoading] = useState(false);
 
- const logoutToastShownRef = useRef(false);
+  const logoutToastShownRef = useRef(false);
 
   // Gunakan ref untuk tracking apakah form pernah diisi
   const formTouchedRef = useRef(false);
@@ -49,24 +48,24 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (isLoading) return;
-    
+
     if (!formData.username.trim() || !formData.password.trim()) {
       toast.error("Username dan password harus diisi!");
       return;
     }
-    
+
     setIsLoading(true);
     setError("");
 
     try {
       await login(formData);
-      // ✅ UBAH: Tidak ada toast di sini, akan muncul di Dashboard
-      
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       const from = location.state?.from?.pathname || "/";
-      
-      // ✅ UBAH: Navigate dengan state loginSuccess
+
       navigate(from, { replace: true, state: { loginSuccess: true } });
     } catch (err) {
       setError("Username atau password salah");
@@ -85,11 +84,9 @@ const Login = () => {
       const defaultEmail = "yogapoke1305@gmail.com";
       const response = await authApi.forgotPassword(defaultEmail);
 
-      toast.success(
-       
-          "Link reset password telah dikirim ke email Anda!",
-        { duration: 5000 }
-      );
+      toast.success("Link reset password telah dikirim ke email Anda!", {
+        duration: 5000,
+      });
     } catch (err) {
       toast.error(err.message || "Gagal mengirim link reset password");
     } finally {
@@ -98,7 +95,8 @@ const Login = () => {
   };
 
   // Check apakah form valid untuk enable/disable button
-  const isFormValid = formData.username.trim() !== "" && formData.password.trim() !== "";
+  const isFormValid =
+    formData.username.trim() !== "" && formData.password.trim() !== "";
 
   return (
     <>
