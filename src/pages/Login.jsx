@@ -62,7 +62,6 @@ const Login = () => {
     try {
       await login(formData);
 
-      await new Promise((resolve) => setTimeout(resolve, 100));
 
       const from = location.state?.from?.pathname || "/";
 

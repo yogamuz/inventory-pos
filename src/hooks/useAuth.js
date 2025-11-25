@@ -2,7 +2,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import authApi from "@/services/api/auth.api";
-// fixing hydration issue by adding _hasHydrated state
 
 const useAuth = create(
   persist(
@@ -10,6 +9,7 @@ const useAuth = create(
       user: null,
       isAuthenticated: false,
       _hasHydrated: false,
+      isInitializing: true, //  INI
 
       setHasHydrated: (state) => {
         set({ _hasHydrated: state });
@@ -25,7 +25,8 @@ const useAuth = create(
           set({
             user: response.data.user,
             isAuthenticated: true,
-            _hasHydrated: true, // ✅ SET HYDRATED SAAT LOGIN
+            _hasHydrated: true,
+            isInitializing: false, // 
           });
           return response;
         } catch (error) {
@@ -39,16 +40,22 @@ const useAuth = create(
       },
 
       checkAuth: async () => {
+        set({ isInitializing: true }); // 
         try {
           const response = await authApi.getMe();
           set({
             user: response.data,
             isAuthenticated: true,
-            _hasHydrated: true, // ✅ SET HYDRATED SAAT CHECK AUTH
+            _hasHydrated: true,
+            isInitializing: false, // 
           });
           return true;
         } catch (error) {
-          set({ user: null, isAuthenticated: false });
+          set({ 
+            user: null, 
+            isAuthenticated: false,
+            isInitializing: false, // 
+          });
           return false;
         }
       },
@@ -59,6 +66,7 @@ const useAuth = create(
         user: state.user,
         isAuthenticated: state.isAuthenticated,
         _hasHydrated: state._hasHydrated,
+        // isInitializing TIDAK di-persist
       }),
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
@@ -67,4 +75,4 @@ const useAuth = create(
   )
 );
 
-export default useAuth;
+export default useAuth;Y
