@@ -9,7 +9,7 @@ const useAuth = create(
       user: null,
       isAuthenticated: false,
       _hasHydrated: false,
-      isInitializing: true, // ✅ TAMBAH INI
+      isInitializing: false, // ✅ UBAH: false sebagai default
 
       setHasHydrated: (state) => {
         set({ _hasHydrated: state });
@@ -26,7 +26,7 @@ const useAuth = create(
             user: response.data.user,
             isAuthenticated: true,
             _hasHydrated: true,
-            isInitializing: false, // ✅ TAMBAH
+            isInitializing: false,
           });
           return response;
         } catch (error) {
@@ -40,21 +40,21 @@ const useAuth = create(
       },
 
       checkAuth: async () => {
-        set({ isInitializing: true }); // ✅ TAMBAH
+        // ✅ HAPUS: set({ isInitializing: true }); ← INI PENYEBAB LOOP!
         try {
           const response = await authApi.getMe();
           set({
             user: response.data,
             isAuthenticated: true,
             _hasHydrated: true,
-            isInitializing: false, // ✅ TAMBAH
+            isInitializing: false,
           });
           return true;
         } catch (error) {
           set({ 
             user: null, 
             isAuthenticated: false,
-            isInitializing: false, // ✅ TAMBAH
+            isInitializing: false,
           });
           return false;
         }
@@ -66,7 +66,6 @@ const useAuth = create(
         user: state.user,
         isAuthenticated: state.isAuthenticated,
         _hasHydrated: state._hasHydrated,
-        // isInitializing TIDAK di-persist
       }),
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
