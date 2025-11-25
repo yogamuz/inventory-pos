@@ -14,7 +14,6 @@ const useAuth = create(
         set({ _hasHydrated: state });
       },
 
-      // Set user data
       setUser: (user) => set({ user, isAuthenticated: !!user }),
 
       clearUser: () => set({ user: null, isAuthenticated: false }),
@@ -25,6 +24,7 @@ const useAuth = create(
           set({
             user: response.data.user,
             isAuthenticated: true,
+            _hasHydrated: true, // ✅ SET HYDRATED SAAT LOGIN
           });
           return response;
         } catch (error) {
@@ -32,19 +32,18 @@ const useAuth = create(
         }
       },
 
-      // Logout
       logout: async () => {
         await authApi.logout();
         set({ user: null, isAuthenticated: false });
       },
 
-      // Check auth status
       checkAuth: async () => {
         try {
           const response = await authApi.getMe();
           set({
             user: response.data,
             isAuthenticated: true,
+            _hasHydrated: true, // ✅ SET HYDRATED SAAT CHECK AUTH
           });
           return true;
         } catch (error) {
@@ -54,12 +53,11 @@ const useAuth = create(
       },
     }),
     {
-      name: "auth-storage", // LocalStorage key name
+      name: "auth-storage",
       partialize: (state) => ({
-        user: state.user, // Hanya simpan user data, bukan token
+        user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
-      // ✅ TAMBAHKAN INI - Callback saat hydration selesai
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
       },
