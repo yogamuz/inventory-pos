@@ -58,6 +58,7 @@ const useAuth = create(
       partialize: (state) => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,
+        _hasHydrated: state._hasHydrated,
       }),
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
