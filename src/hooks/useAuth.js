@@ -2,6 +2,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import authApi from "@/services/api/auth.api";
+// fixing hydration issue by adding _hasHydrated state
 
 const useAuth = create(
   persist(
