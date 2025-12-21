@@ -1,12 +1,11 @@
 // src/config/api.config.js
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_VERSION = "/api/v1";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api/v1";
 
 // Create axios instance
 const apiClient = axios.create({
-  baseURL: `${API_BASE_URL}${API_VERSION}`,
+  baseURL: API_BASE_URL,
   timeout: 30000,
   headers: {
     "Content-Type": "application/json",
@@ -16,7 +15,6 @@ const apiClient = axios.create({
 // Request interceptor untuk logging
 apiClient.interceptors.request.use(
   (config) => {
-
     return config;
   },
   (error) => {
@@ -27,23 +25,20 @@ apiClient.interceptors.request.use(
 // Response interceptor (yang sudah ada, tapi tambahkan logging)
 apiClient.interceptors.response.use(
   (response) => {
-
     return response.data;
   },
   (error) => {
-
-
     const errorMessage =
       error.response?.data?.message || error.message || "Terjadi kesalahan";
 
     // Handle specific error codes
     if (error.response?.status === 401) {
       // Cek apakah sedang di halaman login atau endpoint auth
-      const isAuthEndpoint = 
+      const isAuthEndpoint =
         error.config?.url?.includes("/auth/login") ||
         error.config?.url?.includes("/auth/forgot-password") ||
         error.config?.url?.includes("/auth/reset-password");
-      
+
       const isLoginPage = window.location.pathname === "/login";
 
       // Hanya redirect jika bukan dari auth endpoint dan bukan di halaman login
@@ -56,6 +51,5 @@ apiClient.interceptors.response.use(
     return Promise.reject(new Error(errorMessage));
   }
 );
-
 
 export default apiClient;
