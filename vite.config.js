@@ -16,4 +16,13 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:10000', // ganti dengan backend URL
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''), // optional: hapus /api di request
+      }
+    }
+  }
 })

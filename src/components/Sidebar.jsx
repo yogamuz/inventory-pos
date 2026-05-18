@@ -15,6 +15,7 @@ import {
   BarChart3,
   FileText,
   X,
+  FlaskConical,
   LogOut,
 } from "lucide-react";
 import useAuth from "@/hooks/useAuth";
@@ -31,17 +32,24 @@ function Sidebar({ isOpen, toggleSidebar }) {
       path: "/",
       group: "Main",
     },
+    // {
+    //   id: "stocks",
+    //   icon: ClipboardCheck,
+    //   label: "Bahan Baku",
+    //   path: "/stocks",
+    //   group: "Main",
+    // },
     {
-      id: "stocks",
-      icon: ClipboardCheck,
-      label: "Stocks",
-      path: "/stocks",
+      id: "raw-materials",
+      icon: FlaskConical, // import dari lucide-react
+      label: "Bahan Mentah",
+      path: "/raw-materials",
       group: "Main",
     },
     {
       id: "products",
       icon: Package,
-      label: "Products",
+      label: "Menu",
       path: "/products",
       group: "Main",
     },
@@ -59,7 +67,6 @@ function Sidebar({ isOpen, toggleSidebar }) {
       path: "/history",
       group: "Reports",
     },
-
   ];
 
   const groupedMenus = menuItems.reduce((acc, item) => {
@@ -74,15 +81,15 @@ function Sidebar({ isOpen, toggleSidebar }) {
       toggleSidebar();
     }
   };
-const handleLogout = async () => {
-  try {
-    await logout();
-    navigate("/login", { state: { logoutSuccess: true } });
-  } catch (error) {
-    console.error("Logout failed:", error);
-    toast.error("Gagal logout. Silakan coba lagi.");
-  }
-};
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login", { state: { logoutSuccess: true } });
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast.error("Gagal logout. Silakan coba lagi.");
+    }
+  };
 
   return (
     <>
@@ -103,9 +110,7 @@ const handleLogout = async () => {
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-red-500">
-              MENU
-            </h1>
+            <h1 className="text-2xl font-bold text-red-500">MENU</h1>
             <button onClick={toggleSidebar} className="lg:hidden">
               <X size={24} />
             </button>

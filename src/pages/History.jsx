@@ -1,6 +1,6 @@
 // src/pages/History.jsx
 import { useEffect, useState } from "react";
-import { AlertCircle, X, Package, TrendingUp, TrendingDown, Edit3, Calendar } from "lucide-react";
+import { AlertCircle, X, Package, TrendingUp, TrendingDown, Edit3, Calendar, FlaskConical } from "lucide-react";
 import useHistoryStore from "@/stores/useHistoryStore";
 
 export default function History() {
@@ -20,89 +20,78 @@ export default function History() {
   const [selectedType, setSelectedType] = useState("");
   const [todayFilter, setTodayFilter] = useState(false);
 
-  // Initial fetch
   useEffect(() => {
     fetchHistory();
   }, [filters, pagination.page]);
 
-  // Handle search
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearchValue(value);
-    setFilters({ productName: value });
+    setFilters({ rawMaterialName: value });
   };
 
-  // Handle type filter
-  const handleTypeChange = (type) => {
+  const handleTypeChange = (e) => {
+    const type = e.target.value;
     setSelectedType(type);
     setFilters({ type });
   };
 
-  // Handle today filter
   const handleTodayToggle = () => {
     const newToday = !todayFilter;
     setTodayFilter(newToday);
     setFilters({ today: newToday });
   };
 
-  // Get type icon
   const getTypeIcon = (type) => {
     switch (type) {
-      case 'restock':
-        return <TrendingUp className="h-4 w-4" />;
-      case 'sale':
-        return <TrendingDown className="h-4 w-4" />;
-      case 'adjustment':
-        return <Edit3 className="h-4 w-4" />;
-      default:
-        return <Package className="h-4 w-4" />;
+      case 'restock': return <TrendingUp className="h-4 w-4" />;
+      case 'usage': return <TrendingDown className="h-4 w-4" />;
+      case 'adjustment': return <Edit3 className="h-4 w-4" />;
+      default: return <FlaskConical className="h-4 w-4" />;
     }
   };
 
-  // Get type color
   const getTypeColor = (type) => {
     switch (type) {
-      case 'restock':
-        return 'bg-orange-100 text-orange-700';
-      case 'sale':
-        return 'bg-green-100 text-green-700';
-      case 'adjustment':
-        return 'bg-blue-100 text-blue-700';
-      default:
-        return 'bg-gray-100 text-gray-700';
+      case 'restock': return 'bg-green-100 text-green-700';
+      case 'usage': return 'bg-red-100 text-red-700';
+      case 'adjustment': return 'bg-blue-100 text-blue-700';
+      default: return 'bg-gray-100 text-gray-700';
     }
   };
 
-  // Format date
-  const formatDate = (date) => {
-    return new Date(date).toLocaleString('id-ID', {
+  const getTypeLabel = (type) => {
+    switch (type) {
+      case 'restock': return 'Restock';
+      case 'usage': return 'Pemakaian';
+      case 'adjustment': return 'Adjustment';
+      default: return type;
+    }
+  };
+
+  const formatDate = (date) =>
+    new Date(date).toLocaleString('id-ID', {
       day: '2-digit',
       month: 'short',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
     });
-  };
 
-  // Format quantity
-  const formatQuantity = (type, quantity) => {
-    if (type === 'sale') {
-      return `-${Math.abs(quantity)}`;
-    } else if (type === 'restock') {
-      return `+${quantity}`;
-    }
-    return quantity;
+  const formatQuantity = (type, quantity, unit) => {
+    const prefix = type === 'usage' ? '-' : type === 'restock' ? '+' : '';
+    return `${prefix}${Math.abs(quantity)} ${unit}`;
   };
 
   return (
     <>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Riwayat Stok</h1>
-        <p className="text-gray-600">Pantau semua perubahan stok produk Anda.</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Riwayat Bahan Mentah</h1>
+        <p className="text-gray-600">Pantau semua perubahan stok bahan mentah.</p>
       </div>
 
-      {/* Error Message */}
+      {/* Error */}
       {error && (
         <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
           <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
@@ -118,30 +107,25 @@ export default function History() {
       {/* Filters */}
       <div className="mb-6 bg-white rounded-xl shadow-sm border border-gray-100 p-4">
         <div className="flex flex-wrap gap-4">
-          {/* Search */}
           <div className="flex-1 min-w-[200px]">
             <input
               type="text"
-              placeholder="Cari nama produk..."
+              placeholder="Cari nama bahan mentah..."
               value={searchValue}
               onChange={handleSearch}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
             />
           </div>
-
-          {/* Type Filter */}
           <select
             value={selectedType}
-            onChange={(e) => handleTypeChange(e.target.value)}
+            onChange={handleTypeChange}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
           >
             <option value="">Semua Tipe</option>
             <option value="restock">Restock</option>
-            <option value="sale">Penjualan</option>
+            <option value="usage">Pemakaian</option>
             <option value="adjustment">Adjustment</option>
           </select>
-
-          {/* Today Filter */}
           <button
             onClick={handleTodayToggle}
             className={`px-4 py-2 rounded-lg border-2 transition-colors inline-flex items-center gap-2 ${
@@ -168,46 +152,52 @@ export default function History() {
           </div>
         ) : history.length === 0 ? (
           <div className="text-center py-12">
-            <Package className="mx-auto h-12 w-12 text-gray-400" />
+            <FlaskConical className="mx-auto h-12 w-12 text-gray-400" />
             <h3 className="mt-2 text-sm font-semibold text-gray-900">Tidak ada riwayat</h3>
-            <p className="mt-1 text-sm text-gray-500">Belum ada aktivitas stok yang tercatat.</p>
+            <p className="mt-1 text-sm text-gray-500">Belum ada aktivitas bahan mentah yang tercatat.</p>
           </div>
         ) : (
           <>
             <div className="divide-y divide-gray-100">
               {history.map((item) => (
                 <div
-                  key={item._id}
+                  key={item.id}
                   className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors"
                 >
                   <div className="flex items-center gap-4 flex-1">
-                    {/* Product Image */}
+                    {/* Raw Material Image */}
                     <div className="flex-shrink-0 h-12 w-12">
-                      {item.productId?.imageUrl ? (
+                      {item.rawMaterialId?.imageUrl ? (
                         <img
                           className="h-12 w-12 rounded-lg object-cover"
-                          src={item.productId.imageUrl}
-                          alt={item.productName}
+                          src={item.rawMaterialId.imageUrl}
+                          alt={item.rawMaterialName}
                         />
                       ) : (
-                        <div className="h-12 w-12 rounded-lg bg-gray-200 flex items-center justify-center">
-                          <Package className="h-6 w-6 text-gray-400" />
+                        <div className="h-12 w-12 rounded-lg bg-gray-100 flex items-center justify-center">
+                          <FlaskConical className="h-6 w-6 text-gray-400" />
                         </div>
                       )}
                     </div>
 
-                    {/* Product Info */}
+                    {/* Info */}
                     <div className="flex-1">
-                      <p className="font-semibold text-gray-900 mb-1">{item.productName}</p>
+                      <p className="font-semibold text-gray-900 mb-1">
+                        {item.rawMaterialName}
+                      </p>
                       <div className="flex items-center gap-3 text-sm text-gray-600">
                         <span>{formatDate(item.createdAt)}</span>
                         <span className="text-gray-300">•</span>
                         <span className={`font-semibold ${
-                          item.type === 'sale' ? 'text-red-600' : 
-                          item.type === 'restock' ? 'text-green-600' : 
+                          item.type === 'usage' ? 'text-red-600' :
+                          item.type === 'restock' ? 'text-green-600' :
                           'text-blue-600'
                         }`}>
-                          {formatQuantity(item.type, item.quantity)} unit
+                          {formatQuantity(item.type, item.quantity, item.unit)}
+                        </span>
+                        <span className="text-gray-300">•</span>
+                        <span className="text-gray-500">
+                          Stok: {item.stockBefore} → {item.stockAfter} {item.unit}
                         </span>
                         {item.notes && (
                           <>
@@ -220,15 +210,9 @@ export default function History() {
                   </div>
 
                   {/* Type Badge */}
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1.5 ${getTypeColor(
-                      item.type
-                    )}`}
-                  >
+                  <span className={`px-3 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1.5 ${getTypeColor(item.type)}`}>
                     {getTypeIcon(item.type)}
-                    {item.type === 'restock' ? 'Restock' : 
-                     item.type === 'sale' ? 'Penjualan' : 
-                     'Adjustment'}
+                    {getTypeLabel(item.type)}
                   </span>
                 </div>
               ))}

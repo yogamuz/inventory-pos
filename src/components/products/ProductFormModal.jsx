@@ -169,35 +169,34 @@ function ProductFormModal({ isOpen, onClose, onSubmit, product, loading }) {
                     placeholder="Masukkan harga"
                   />
                 </div>
-
-                {/* Stock - REVISI */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Stok
-                  </label>
-                  <input
-                    type="number"
-                    name="stock"
-                    value={formData.stock}
-                    onChange={handleChange}
-                    min="0"
-                    disabled={!!product} // Disable ketika edit mode
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed"
-                    placeholder="Masukkan jumlah stok"
-                  />
-                  {product && (
+                {/* Stock - hanya tampil saat edit, read-only info */}
+                {product && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Stok
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.stock}
+                      disabled
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed text-gray-500"
+                    />
+                    <p className="mt-1 text-xs text-gray-400">
+                      Stok dihitung otomatis berdasarkan bahan baku yang
+                      tersedia.
+                    </p>
                     <button
                       type="button"
                       onClick={() => {
                         onClose();
-                        navigate("/stocks");
+                        navigate("/raw-materials");
                       }}
                       className="mt-1 text-sm text-blue-500 hover:text-blue-600 transition-colors"
                     >
-                      Ingin ubah stock?
+                      Kelola stok bahan baku →
                     </button>
-                  )}
-                </div>
+                  </div>
+                )}
 
                 {/* Active Status */}
                 <div className="flex items-center">

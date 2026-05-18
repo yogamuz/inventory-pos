@@ -10,10 +10,10 @@ const useHistoryStore = create(
       history: [],
       stats: {
         totalRestock: 0,
-        totalSale: 0,
+        totalUsage: 0,
         totalAdjustment: 0,
         quantityRestocked: 0,
-        quantitySold: 0,
+        quantityUsed: 0,
       },
       pagination: {
         page: 1,
@@ -22,7 +22,7 @@ const useHistoryStore = create(
         pages: 0,
       },
       filters: {
-        productName: "",
+        rawMaterialName: "",
         type: "",
         today: false,
       },
@@ -43,7 +43,7 @@ const useHistoryStore = create(
         }));
       },
 
-      // Fetch all history
+      // Fetch all raw material history
       fetchHistory: async () => {
         const { history: historyData } = get();
 
@@ -55,18 +55,17 @@ const useHistoryStore = create(
 
         try {
           const { filters, pagination } = get();
-          
-          // Build params - only include filters that have values
+
           const params = {
             page: pagination.page,
             limit: pagination.limit,
           };
 
-          if (filters.productName) params.productName = filters.productName;
+          if (filters.rawMaterialName) params.rawMaterialName = filters.rawMaterialName;
           if (filters.type) params.type = filters.type;
           if (filters.today) params.today = filters.today;
 
-          const response = await historyApi.getAllHistory(params);
+          const response = await historyApi.getRawMaterialHistory(params);
 
           set({
             history: response.data.history,
@@ -79,51 +78,17 @@ const useHistoryStore = create(
         }
       },
 
-      // Fetch history stats
+      // Fetch stats
       fetchStats: async () => {
         try {
           const { filters } = get();
-          
-          // Build params - only include if today is true
           const params = {};
           if (filters.today) params.today = filters.today;
 
-          const response = await historyApi.getHistoryStats(params);
-
-          set({
-            stats: response.data,
-          });
+          const response = await historyApi.getRawMaterialHistoryStats(params);
+          set({ stats: response.data });
         } catch (error) {
           console.error("Failed to fetch stats:", error);
-        }
-      },
-
-      // Fetch history by product ID
-      fetchHistoryByProduct: async (productId) => {
-        set({ loading: true, error: null });
-
-        try {
-          const { filters, pagination } = get();
-          
-          // Build params - only include filters that have values
-          const params = {
-            page: pagination.page,
-            limit: pagination.limit,
-          };
-
-          if (filters.type) params.type = filters.type;
-          if (filters.today) params.today = filters.today;
-
-          const response = await historyApi.getHistoryByProductId(productId, params);
-
-          set({
-            history: response.data.history,
-            pagination: response.data.pagination,
-            loading: false,
-          });
-        } catch (error) {
-          set({ error: error.message, loading: false });
-          throw error;
         }
       },
 
@@ -136,10 +101,10 @@ const useHistoryStore = create(
           history: [],
           stats: {
             totalRestock: 0,
-            totalSale: 0,
+            totalUsage: 0,
             totalAdjustment: 0,
             quantityRestocked: 0,
-            quantitySold: 0,
+            quantityUsed: 0,
           },
           pagination: {
             page: 1,
@@ -148,7 +113,7 @@ const useHistoryStore = create(
             pages: 0,
           },
           filters: {
-            productName: "",
+            rawMaterialName: "",
             type: "",
             today: false,
           },

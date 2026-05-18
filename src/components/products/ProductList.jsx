@@ -1,8 +1,20 @@
 // src/components/products/ProductList.jsx
-import { Package, Edit, Trash2 } from 'lucide-react';
+import {
+  Package,
+  Edit,
+  Trash2,
+  FlaskConical,
+  ShoppingCart,
+} from "lucide-react";
 
-function ProductList({ products, onEdit, onDelete, loading }) {
-
+function ProductList({
+  products,
+  onEdit,
+  onDelete,
+  loading,
+  onViewRecipe,
+  onSell,
+}) {
   if (!products || products.length === 0) {
     // ✅ TAMBAH: Tampilkan spinner hanya jika benar-benar kosong DAN loading
     if (loading) {
@@ -12,20 +24,24 @@ function ProductList({ products, onEdit, onDelete, loading }) {
         </div>
       );
     }
-    
+
     return (
       <div className="text-center py-12">
         <Package className="mx-auto h-12 w-12 text-gray-400" />
-        <h3 className="mt-2 text-sm font-semibold text-gray-900">Tidak ada produk</h3>
-        <p className="mt-1 text-sm text-gray-500">Mulai dengan menambahkan produk baru.</p>
+        <h3 className="mt-2 text-sm font-semibold text-gray-900">
+          Tidak ada produk
+        </h3>
+        <p className="mt-1 text-sm text-gray-500">
+          Mulai dengan menambahkan produk baru.
+        </p>
       </div>
     );
   }
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
       minimumFractionDigits: 0,
     }).format(amount);
   };
@@ -41,7 +57,7 @@ function ProductList({ products, onEdit, onDelete, loading }) {
           </div>
         </div>
       )}
-      
+
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
@@ -56,6 +72,9 @@ function ProductList({ products, onEdit, onDelete, loading }) {
             </th>
             <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
               Stok
+            </th>
+            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Terjual
             </th>
             <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
               Status
@@ -94,24 +113,37 @@ function ProductList({ products, onEdit, onDelete, loading }) {
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-center">
-                <div className="text-sm text-gray-900">{formatCurrency(product.price)}</div>
+                <div className="text-sm text-gray-900">
+                  {formatCurrency(product.price)}
+                </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-center">
                 <div className="text-sm text-gray-900">
-                  <span className={product.stock <= 10 ? 'text-red-600 font-semibold' : ''}>
+                  <span
+                    className={
+                      product.stock <= 5
+                        ? "text-red-600 font-semibold"
+                        : product.stock <= 10
+                          ? "text-yellow-600 font-semibold"
+                          : ""
+                    }
+                  >
                     {product.stock}
                   </span>
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-center">
+                <div className="text-sm text-gray-900">{product.sold ?? 0}</div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-center">
                 <span
                   className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                     product.isActive
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-red-100 text-red-800'
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
                   }`}
                 >
-                  {product.isActive ? 'Aktif' : 'Nonaktif'}
+                  {product.isActive ? "Aktif" : "Nonaktif"}
                 </span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
@@ -121,6 +153,21 @@ function ProductList({ products, onEdit, onDelete, loading }) {
                 >
                   <Edit className="h-4 w-4 mr-1" />
                   Edit
+                </button>
+                <button
+                  onClick={() => onViewRecipe(product)}
+                  className="text-purple-600 hover:text-purple-900 mr-4 inline-flex items-center"
+                >
+                  <FlaskConical className="h-4 w-4 mr-1" />
+                  Resep
+                </button>
+                <button
+                  onClick={() => onSell(product)}
+                  disabled={product.stock <= 0}
+                  className="text-green-600 hover:text-green-900 mr-4 inline-flex items-center disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <ShoppingCart className="h-4 w-4 mr-1" />
+                  Jual
                 </button>
                 <button
                   onClick={() => onDelete(product)}

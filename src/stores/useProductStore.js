@@ -40,12 +40,12 @@ const useProductStore = create(
 
       // Fetch all products
       fetchProducts: async () => {
-        const { products } = get(); 
+        const { products } = get();
 
         if (products.length === 0) {
           set({ loading: true, error: null });
         } else {
-          set({ error: null }); 
+          set({ error: null });
         }
 
         try {
@@ -88,7 +88,7 @@ const useProductStore = create(
         try {
           const response = await productApi.createProduct(
             productData,
-            imageFile
+            imageFile,
           );
 
           // Refresh products list
@@ -109,13 +109,13 @@ const useProductStore = create(
           const response = await productApi.updateProduct(
             id,
             productData,
-            imageFile
+            imageFile,
           );
 
           // ✅ Update products list dengan id yang benar
           set((state) => ({
             products: state.products.map((p) =>
-              p.id === id ? response.data : p
+              p.id === id ? response.data : p,
             ),
             currentProduct: response.data,
             loading: false,
@@ -169,7 +169,7 @@ const useProductStore = create(
           // Update products list
           set((state) => ({
             products: state.products.map((p) =>
-              p.id === id ? response.data : p
+              p.id === id ? response.data : p,
             ),
             loading: false,
           }));
@@ -186,16 +186,15 @@ const useProductStore = create(
         set({ loading: true, error: null });
         try {
           const response = await productApi.recordSale(id, quantity);
+          // response.data sekarang = { product, saleNumber }
+          const { product, saleNumber } = response.data;
 
-          // Update products list
           set((state) => ({
-            products: state.products.map((p) =>
-              p.id === id ? response.data : p
-            ),
+            products: state.products.map((p) => (p.id === id ? product : p)),
             loading: false,
           }));
 
-          return response.data;
+          return { product, saleNumber };
         } catch (error) {
           set({ error: error.message, loading: false });
           throw error;
@@ -211,7 +210,7 @@ const useProductStore = create(
           // Update products list
           set((state) => ({
             products: state.products.map((p) =>
-              p.id === id ? response.data : p
+              p.id === id ? response.data : p,
             ),
             loading: false,
           }));
@@ -250,8 +249,8 @@ const useProductStore = create(
           error: null,
         }),
     }),
-    { name: "ProductStore" }
-  )
+    { name: "ProductStore" },
+  ),
 );
 
 export default useProductStore;

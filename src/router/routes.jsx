@@ -8,6 +8,9 @@ import Analytics from "@/pages/Analytics.jsx";
 import History from "@/pages/History.jsx";
 import Login from "@/pages/Login.jsx";
 import ResetPassword from "@/pages/ResetPassword.jsx";
+import RawMaterials from "@/pages/RawMaterials.jsx";
+import AutokeyCipher from "@/pages/AutoKeyCipher";
+
 
 export default function AppRoutes() {
   return (
@@ -30,6 +33,8 @@ export default function AppRoutes() {
         <Route path="products" element={<Products />} />
         <Route path="analytics" element={<Analytics />} />
         <Route path="history" element={<History />} />
+        <Route path="/raw-materials" element={<RawMaterials />} />
+        <Route path="/autokey-cipher" element={<AutokeyCipher />} />
       </Route>
     </Routes>
   );
